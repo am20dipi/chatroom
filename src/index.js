@@ -3,7 +3,10 @@
 import { initializeApp } from 'firebase/app'
 import { 
     getFirestore, collection, /* getDocs, */
-    addDoc, onSnapshot
+    addDoc, onSnapshot,
+    query, where,
+    orderBy, serverTimestamp,
+    getDoc, doc
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -25,7 +28,11 @@ const db = getFirestore()
 
 
 // collection reference
-const collectionRef = collection(db, 'chats')
+export const collectionRef = collection(db, 'chats')
+
+
+// querying data
+/* const q = query(collectionRef, orderBy("created_at", "asc")) */
 
 
 // get collection data (retrieves documents inside collection)
@@ -60,16 +67,29 @@ onSnapshot(collectionRef, (snapshot) => {
 
 
 // add a new chat
-const newChat = document.querySelector('.new-chat')
+const newChatForm = document.querySelector('.new-chat')
 
-newChat.addEventListener("submit", (e) => {
+newChatForm.addEventListener("submit", (e) => {
     e.preventDefault()
 
     addDoc(collectionRef, {
-        message: newChat.message.value
+        message: newChatForm.message.value,
+        created_at: serverTimestamp()
     })
     .then(() => {
-        newChat.reset()
+        newChatForm.reset()
     })
 })
 
+
+// get single document
+const documentRef = doc(db, 'chats', "lTpSqDVgdCyK1KcwxgyM" )
+
+/* getDoc(documentRef)
+    .then((doc) => {
+        console.log(doc.data(), doc.id)
+    }) */
+
+onSnapshot(documentRef, (doc) => {
+    console.log(doc.data(), doc.id)
+})
