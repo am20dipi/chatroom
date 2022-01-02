@@ -9,6 +9,11 @@ import {
     getDoc, doc
 } from 'firebase/firestore'
 
+import {
+    getAuth,
+    createUserWithEmailAndPassword
+} from 'firebase/auth'
+
 const firebaseConfig = {
     apiKey: "AIzaSyAu6iwGs95JYD9xTt1ZJJ5HIbw-P9LLT0g",
     authDomain: "chatroom-99c68.firebaseapp.com",
@@ -24,7 +29,9 @@ initializeApp(firebaseConfig)
 
 // initialize services
 const db = getFirestore()
-    // db === database
+
+// initialize auth from firebase
+const auth = getAuth()
 
 
 // collection reference
@@ -92,4 +99,22 @@ const documentRef = doc(db, 'chats', "lTpSqDVgdCyK1KcwxgyM" )
 
 onSnapshot(documentRef, (doc) => {
     console.log(doc.data(), doc.id)
+})
+
+
+// signing users up
+const signupForm = document.querySelector(".signup")
+signupForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const email = signupForm.email.value
+    const password = signupForm.password.value
+
+    createUserWithEmailAndPassword(auth, email, password )
+        .then((credential) => {
+            console.log('user created: ', credential.user)
+            signupForm.reset()
+        })
+        .catch((error) => {
+            console.log(error.message)
+        })
 })
