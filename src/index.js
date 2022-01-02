@@ -2,7 +2,8 @@
 
 import { initializeApp } from 'firebase/app'
 import { 
-    getFirestore, collection, getDocs
+    getFirestore, collection, /* getDocs, */
+    addDoc, onSnapshot
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -31,7 +32,7 @@ const collectionRef = collection(db, 'chats')
     // passing in collectionRef to getDocs() produces a snapshot
     // when we retrieve that snapshot, we want to iterate through the documents of our collection
     // and only push the doc's data and id into a new array "chats"
-getDocs(collectionRef)
+/* getDocs(collectionRef)
     .then((snapshot) => {
         //console.log(snapshot.docs)
         let chats = []
@@ -39,4 +40,36 @@ getDocs(collectionRef)
             chats.push({ ...doc.data(), id: doc.id })
         })
         console.log(chats)
+        
     })
+    .catch((error) => {
+        console.log(error.message)
+    }) */
+    // THIS IS GOOD BUT WE WANT REAL TIME DATA COLLECTION
+
+
+// realtime data collection
+    // this callback is going to fire once initially and thereafter every time there is a change in the collection
+onSnapshot(collectionRef, (snapshot) => {
+    let chats = []
+    snapshot.docs.forEach((doc) => {
+        chats.push({ ...doc.data(), id: doc.id })
+    })
+    console.log(chats)
+})
+
+
+// add a new chat
+const newChat = document.querySelector('.new-chat')
+
+newChat.addEventListener("submit", (e) => {
+    e.preventDefault()
+
+    addDoc(collectionRef, {
+        message: newChat.message.value
+    })
+    .then(() => {
+        newChat.reset()
+    })
+})
+
