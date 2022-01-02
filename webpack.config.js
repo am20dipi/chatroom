@@ -10,7 +10,7 @@ module.exports = {
     entry: './src/index.js',
     // outputs an object
     output: {
-        path: path.resolve(_dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'
     },
     watch: true
