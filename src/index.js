@@ -2,7 +2,7 @@
 
 import { initializeApp } from 'firebase/app'
 import { 
-    getFirestore, collection
+    getFirestore, collection, getDocs
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -24,7 +24,19 @@ const db = getFirestore()
 
 
 // collection reference
-const collectionRef = collection(db, '')
+const collectionRef = collection(db, 'chats')
 
 
-// get collection data
+// get collection data (retrieves documents inside collection)
+    // passing in collectionRef to getDocs() produces a snapshot
+    // when we retrieve that snapshot, we want to iterate through the documents of our collection
+    // and only push the doc's data and id into a new array "chats"
+getDocs(collectionRef)
+    .then((snapshot) => {
+        //console.log(snapshot.docs)
+        let chats = []
+        snapshot.docs.forEach((doc) => {
+            chats.push({ ...doc.data(), id: doc.id })
+        })
+        console.log(chats)
+    })

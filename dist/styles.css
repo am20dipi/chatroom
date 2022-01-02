@@ -9,6 +9,7 @@
     box-shadow: none !important;
 }
 
-.btn:focus{
+.btn:hover{
     outline: none !important;
+    color: rgb(88, 88, 116);
 }
