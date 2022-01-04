@@ -13,3 +13,7 @@
     outline: none !important;
     color: rgb(88, 88, 116);
 }
+
+li {
+    list-style: none;
+}

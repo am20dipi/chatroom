@@ -11,7 +11,9 @@ import {
 
 import {
     getAuth,
-    createUserWithEmailAndPassword
+    createUserWithEmailAndPassword,
+    signOut,
+    signInWithEmailAndPassword
 } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -39,7 +41,7 @@ export const collectionRef = collection(db, 'chats')
 
 
 // querying data
-/* const q = query(collectionRef, orderBy("created_at", "asc")) */
+const q = query(collectionRef, orderBy("created_at", "asc")) 
 
 
 // get collection data (retrieves documents inside collection)
@@ -61,15 +63,22 @@ export const collectionRef = collection(db, 'chats')
     }) */
     // THIS IS GOOD BUT WE WANT REAL TIME DATA COLLECTION
 
-
+const chatList = document.querySelector('.chat-list')
 // realtime data collection
     // this callback is going to fire once initially and thereafter every time there is a change in the collection
-onSnapshot(collectionRef, (snapshot) => {
+
+onSnapshot(q, (snapshot) => {
     let chats = []
     snapshot.docs.forEach((doc) => {
         chats.push({ ...doc.data(), id: doc.id })
     })
     console.log(chats)
+    
+    chats.forEach((chat) => {
+        const li = document.createElement("li")
+        li.innerHTML = `<strong>${chat.username}</strong>: ${chat.message}`
+        chatList.appendChild(li)
+    })
 })
 
 
@@ -90,16 +99,16 @@ newChatForm.addEventListener("submit", (e) => {
 
 
 // get single document
-const documentRef = doc(db, 'chats', "lTpSqDVgdCyK1KcwxgyM" )
+/* const documentRef = doc(db, 'chats', "lTpSqDVgdCyK1KcwxgyM" )
 
-/* getDoc(documentRef)
+getDoc(documentRef)
     .then((doc) => {
         console.log(doc.data(), doc.id)
-    }) */
+    })
 
 onSnapshot(documentRef, (doc) => {
     console.log(doc.data(), doc.id)
-})
+}) */
 
 
 // signing users up
@@ -118,3 +127,41 @@ signupForm.addEventListener("submit", (e) => {
             console.log(error.message)
         })
 })
+
+// logging users out
+
+const logoutButton = document.querySelector(".logout")
+logoutButton.addEventListener("click", () => {
+    signOut(auth)
+        .then(() => {
+            console.log("user signed out")
+        })
+        .catch((error) => {
+            console.log(error.message)
+        })
+})
+
+// logging users in
+const loginForm = document.querySelector(".login")
+loginForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const email = loginForm.email.value
+    const password = loginForm.password.value
+
+    signInWithEmailAndPassword(auth, email, password )
+        .then((credential) => {
+            console.log('user signed in: ', credential.user)
+            loginForm.reset()
+        })
+        .catch((error) => {
+            console.log(error.message)
+        })
+})
+
+const chatRooms = document.querySelector('.chat-rooms')
+
+chatRooms.addEventListener("click", (e) => {
+    console.log(e)
+})
+
+
